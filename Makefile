@@ -26,9 +26,7 @@ LDFLAGS   := -Xlinker --gc-sections -Xlinker --relax -Wl,-u,vfprintf -lprintf_fl
 
 #`make build-all` for building all the executable files 
 .PHONY: build-all
-build-all:
-	make compile-all
-	$(foreach i, $(MAIN_OBJS), make build MAINFUNC=$(i:%.o=%);)
+build-all: $(HEX_FILES)
 
 #`make build` for build only 
 .PHONY: build
@@ -46,7 +44,7 @@ bin/%.o:%.c
 	@$(OBJCOPY) -j .text -j .data -O ihex $< $@
 
 #`make EXECUTABLENAME.elf` for generating the elf file
-$(MAINFUNC).elf: $(OBJS) $(MAINFUNC).o
+%.elf: $(OBJS) %.o #The object of the file that contains the main function
 	@echo Building Target: $@
 	@$(CC) $(CFLAGS) $(LDFLAGS) $^ -o $@
 	@avr-size -C $@
@@ -68,6 +66,7 @@ test:
 	@echo The objects  are :  $(OBJS)
 	@echo
 	@echo The main objects  are :  $(MAIN_OBJS)
+	@echo The hex files     are :  $(HEX_FILES)
 
 
 .PHONY: clean
