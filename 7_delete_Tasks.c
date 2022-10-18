@@ -39,10 +39,13 @@ void vTask2(void *pv)
     USART_sendStream((char*) pv);
     USART_sendStream("\nHello From Task2\n\n");
     counter++;
-    if(counter==2)
+    if(counter==2){
+      USART_sendStream("Task2 is deleted\n");
       vTaskDelete(NULL); /* Execute this task twice, then delete it*/
-    vTaskDelay(1000);
-    
+      /*Anything after this line will not be executed .. Because the task is deleted */
+    }
+    vTaskDelay(1000); /*Non blocking delay*/
+   
   }
 }
 

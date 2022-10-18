@@ -9,46 +9,46 @@ LD        	:= avr-ld
 OBJCOPY   	:= avr-objcopy
 
 
-
 SOURCES       := $(shell ls FreeRTOS/*.c Drivers/*.c)
 INCLUDES      := Drivers FreeRTOS
 MAIN_SOURCES  := $(shell ls *.c)
 
-OBJS	      := $(SOURCES:.c=.o)
-MAIN_OBJS     := $(MAIN_SOURCES:.c=.o)
-MAIN_FUNC     := 
-EXEC	      :=
+OBJS	      := $(SOURCES:%.c=bin/%.o)      #Replaces every source file with an associated object file in bin directory
+MAIN_OBJS     := $(MAIN_SOURCES:%.c=bin/%.o)
+EXECUTABLES   := $(MAIN_OBJS:%.o=%.elf)
+HEX_FILES     := $(MAIN_OBJS:%.o=%.hex)
 
 CFLAGS    := -Wall -Wextra -g -Os -fdata-sections -ffunction-sections -fshort-enums -mmcu=$(MCU) -DF_CPU=$(F_CPU)
 CPPFLAGS  := $(INCLUDES:%=-I%)
-LDFLAGS   := -Xlinker --gc-sections -Xlinker --relax -Wl,-u,vfprintf -lprintf_flt -lm #-Xlinker --strip-all
+LDFLAGS   := -Xlinker --gc-sections -Xlinker --relax -Wl,-u,vfprintf -lprintf_flt -lm -Xlinker --strip-all
 
-#VPATH := FreeRTOS Drivers
+
 
 #`make build-all` for building all the executable files 
 .PHONY: build-all
 build-all:
 	make compile-all
-	$(foreach i, $(MAIN_OBJS), make build EXEC=$(shell basename -s .o $(i)) MAINFUNC=$(i);)
+	$(foreach i, $(MAIN_OBJS), make build MAINFUNC=$(i:%.o=%);)
 
 #`make build` for build only 
 .PHONY: build
-build:   $(EXEC).hex
+build:   $(MAINFUNC).hex
 
 
-%.o:%.c
+bin/%.o:%.c
+	@mkdir -p $(INCLUDES:%=bin/%)
 	@echo Compiling ---------------------------------------- $@
 	@$(CC) -c $(CFLAGS)  $(CPPFLAGS) $< -o $@
 
 #`make x.hex` generate an object file, x.hex from elf file, x.elf,.
 %.hex:%.elf
-	@echo Genrating hex file --------------------------------- $@
+	@echo Genrating hex file ------------------------------- $@
 	@$(OBJCOPY) -j .text -j .data -O ihex $< $@
 
 #`make EXECUTABLENAME.elf` for generating the elf file
-$(EXEC).elf: $(OBJS) $(MAINFUNC)
+$(MAINFUNC).elf: $(OBJS) $(MAINFUNC).o
 	@echo Building Target: $@
-	$(CC) $(CFLAGS) $(LDFLAGS) $^ -o $@
+	@$(CC) $(CFLAGS) $(LDFLAGS) $^ -o $@
 	@avr-size -C $@
 
 
@@ -73,6 +73,6 @@ test:
 .PHONY: clean
 clean:
 	@rm -rf $(OBJS) $(PREPROCESSED) $(ASSEMBLIES) $(DEPENDENCIES) $(MAIN_OBJS) \
-	*.out *.map *.elf *.map *.hex *.s *.i *.d *.lss *.o *.obj
+	$(EXECUTABLES) $(HEX_FILES) bin/ *.out *.map *.elf *.map *.hex *.s *.i *.d *.lss *.o *.obj
 	@echo CLEANED!
 

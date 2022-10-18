@@ -45,7 +45,7 @@ extern void USART_init(void)
   SET_BIT(UCSRB, UCSRB_TXEN);
 
   /*Clear the screen*/
-  USART_clear_screen();
+  //USART_clear_screen();
 }
 
 

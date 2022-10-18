@@ -18,6 +18,8 @@
 
 static const char *Task1pcName="Task1";
 xTaskHandle task1;
+
+/*Will be called while the idle state*/
 void vApplicationIdleHook(void);
 
 
@@ -29,7 +31,6 @@ void vTask1(void *pv)
     vTaskDelay(2000);
   }
 }
-
 
 
 
