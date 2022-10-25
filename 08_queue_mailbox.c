@@ -9,8 +9,6 @@
  * 
  */
 
-
-#include "Drivers/DIO_interface.h"
 #include "Drivers/USART_interface.h"
 
 #include "FreeRTOS/FreeRTOS.h"

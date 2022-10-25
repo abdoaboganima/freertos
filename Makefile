@@ -1,3 +1,13 @@
+#******************************************************************************
+# Copyright (C) 2022 by Abdulrahman Aboghanima
+#
+# Redistribution and use in source and binary forms, with or without
+# Modification, are permitted as long as there is no misuse of this
+# software.
+# Abdulrahman Aboghanima is not liable for any misuse of this Material
+#
+#******************************************************************************
+
 #The Compiler Used
 CC		:= avr-gcc
 #Target MCU
